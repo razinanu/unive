@@ -4,7 +4,6 @@ import java.awt.event.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.awt.geom.*;
 
 public class Gui extends JFrame {
 	int height;
@@ -14,6 +13,9 @@ public class Gui extends JFrame {
 		ArrayList<Systems> sysArray = new ArrayList<Systems>();
 		sysArray = sys.getValue();
 		new Gui(sysArray);
+		JLabel label = new JLabel("Hallo");
+		JTextField tf = new JTextField("Hallo World");
+		MyListener l = new MyListener(tf, label);
 	}
 	public Gui(ArrayList<Systems> sysArray) {
 		super("System");

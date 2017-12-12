@@ -14,10 +14,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 public class Systems {
 
 	private String sysName;
-	private double performprovide;
-	private double performConsume;
-	private double tEnd;
-	private double tStart;
+	private ArrayList<String> versions = new ArrayList<String>();
 
 	public String getSysName() {
 		return sysName;
@@ -27,150 +24,89 @@ public class Systems {
 		this.sysName = sysName;
 	}
 
-	public double getPerformprovide() {
-		return performprovide;
+	public ArrayList<String> getVersions() {
+		return versions;
 	}
 
-	public void setPerformprovide(double performprovide) {
-		this.performprovide = performprovide;
+	public void setVersions(ArrayList<String> versions) {
+		this.versions = versions;
 	}
 
-	public double getPerformConsume() {
-		return performConsume;
+	public Systems(String sysName, ArrayList<String> version) {
+		this.sysName = sysName;
+		this.versions = version;
+
 	}
 
-	public void setPerformConsume(double performConsume) {
-		this.performConsume = performConsume;
+	public Systems() {
 	}
-
-	// public double getPerformSave() {
-	// return performSave;
-	// }
-
-	// public void setPerformSave(double performSave) {
-	// this.performSave = performSave;
-	// }
-
-	
-	// private double performSave;
-
-
-	public double gettStart() {
-		return tStart;
-	}
-
-	public void settStart(double d) {
-		this.tStart = d;
-	}
-
-	public double gettEnd() {
-		return tEnd;
-	}
-
-	public void settEnd(double tEnd) {
-		this.tEnd = tEnd;
-	}
-
-
 
 	public ArrayList<Systems> getValue() throws FileNotFoundException, IOException {
 
-		// super("Capabilities");
-		String excelFilePath = "SystemsTest.xlsx";
+		String excelFilePath = "systemsTest.xlsx";
 		FileInputStream inputStream = new FileInputStream(new File(excelFilePath));
 		ArrayList<Systems> sysArray = new ArrayList<Systems>();
 		Workbook workbook = new XSSFWorkbook(inputStream);
 		Sheet firstSheet = workbook.getSheetAt(0);
-		Iterator<Row> iterator = firstSheet.iterator();
-		ArrayList<String> systems = new ArrayList<String>();
+		Iterator<Row> rowIterator = firstSheet.iterator();
+		ArrayList<Systems> systems = new ArrayList<Systems>();
 
-		// setDefaultCloseOperation(EXIT_ON_CLOSE);
-		// getContentPane().setLayout(new FlowLayout());
-		while (iterator.hasNext()) {
-			Row nextRow = iterator.next();
-			Iterator<Cell> cellIterator = nextRow.cellIterator();
+		while (rowIterator.hasNext()) {
+			Row row = rowIterator.next();
 
-			int counter = 0;
+			// For each row iterate through each columns
+			Iterator<Cell> cellIterator = row.cellIterator();
+			Systems sys = new Systems();
+			ArrayList<String> versions = new ArrayList<String>();
+			int i = 0;
 
 			while (cellIterator.hasNext()) {
 
 				Cell cell = cellIterator.next();
-				switch (cell.getCellType()) {
-				case Cell.CELL_TYPE_STRING:
-					// JLabel label = new JLabel(cell.getStringCellValue().toString());
-					// getContentPane().add(label);
-					if (cell.getRow().getRowNum() != 0) {
-						// System.out.println("Row is: "+cell.getRow().getRowNum());
-						Systems sys = new Systems();
-						int clmIndex = cell.getColumnIndex();
-						int rowIndex = cell.getRow().getRowNum();
-						sys.setSysName(cell.getStringCellValue().toString());
-						// System.out.println("System: " + sys.sysName);
-						sys.setPerformprovide(
-								workbook.getSheetAt(0).getRow(rowIndex).getCell(clmIndex + 1).getNumericCellValue());
-						sys.setPerformConsume(
-								workbook.getSheetAt(0).getRow(rowIndex).getCell(clmIndex + 2).getNumericCellValue());
-						sys.settStart(
-								workbook.getSheetAt(0).getRow(rowIndex).getCell(clmIndex + 3).getNumericCellValue());
-						sys.settEnd(
-								workbook.getSheetAt(0).getRow(rowIndex).getCell(clmIndex + 4).getNumericCellValue());
-						sysArray.add(sys);
 
+				if (cell.getColumnIndex() == 0) {
+
+					sys.setSysName(cell.getStringCellValue());
+
+				} else
+					switch (cell.getCellTypeEnum()) {
+					case NUMERIC:
+						versions.add(Double.toString(cell.getNumericCellValue()));
+						// System.out.print(Double.toString(cell.getNumericCellValue()) +
+						// "(Integer)\t");
+						break;
+					case STRING:
+						versions.add(cell.getStringCellValue());
+						// System.out.print(cell.getStringCellValue() + "(String)\t");
+						break;
 					}
-					break;
-				}
-			}
-		}
 
-		// while (iterator.hasNext()) {
-		// Row nextRow = iterator.next();
-		// Iterator<Cell> cellIterator = nextRow.cellIterator();
-		// while (cellIterator.hasNext()) {
-		// Cell cell = cellIterator.next();
-		// if (cell.getRow().getRowNum() != 0) {
-		// int clmIndex = cell.getColumnIndex();
-		// int rowIndex = cell.getRow().getRowNum();
-		// sys.sysName = cell.getStringCellValue().toString();
-		//
-		// sys.performprovide = workbook.getSheetAt(0).getRow(rowIndex).getCell(clmIndex
-		// + 1)
-		// .getNumericCellValue();
-		// sys.performConsume = workbook.getSheetAt(0).getRow(rowIndex).getCell(clmIndex
-		// + 2)
-		// .getNumericCellValue();
-		// sys.performSave = workbook.getSheetAt(0).getRow(rowIndex).getCell(clmIndex +
-		// 3)
-		// .getNumericCellValue();
-		// sysArray.add(sys);
-		// }
-		//
-		// }
-		//
-		// }
+			}
+			sys.versions = versions;
+			systems.add(sys);
+			System.out.println();
+		}
 
 		workbook.close();
 		inputStream.close();
-		// setLocation(250, 190);
-		// setSize(300, 90);
-		// setVisible(true);
-		return sysArray;
+		return systems;
+
 	}
 
 	public static void main(String[] args) throws IOException {
-		// new Fenster();
-		// new Fenster();
-		ArrayList<Systems> systems = new ArrayList<Systems>();
-		Systems system = new Systems();
-		systems = system.getValue();
-		/// System.out.println("System 2: " + systems.get(3).sysName);
-		 for (int i = 0; i < systems.size(); i++) {
-		 System.out.print("System: " + systems.get(i).sysName);
-		 System.out.print(" Provide: " + systems.get(i).performprovide);
-		 System.out.print(" consume: " + systems.get(i).performConsume);
-		 System.out.println(" TStart: " + systems.get(i).tStart);
-		 System.out.println(" TEnd: " + systems.get(i).tEnd);
 
-		 }
+		Systems sys = new Systems();
+		ArrayList<Systems> systems = new ArrayList<Systems>();
+		systems = sys.getValue();
+		for (int i = 0; i < systems.size(); i++) {
+
+			sys = systems.get(i);
+			System.out.print(sys.sysName);
+			for (int y = 0; y < sys.versions.size(); y++) {
+				System.out.print(" " + sys.versions.get(y));
+			}
+			System.out.println();
+		}
 
 	}
 
